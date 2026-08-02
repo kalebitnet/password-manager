@@ -65,11 +65,11 @@ with.
 This I think is a good start. I've seen this elsewhere so I assume it is good
 practice. t is obvious as to what the URL is for and what it is doing. Something
 else I've seen is the use of API keys. So I can do something like
-> <domain>/api/key-auth
-> <domain>/api/confirm-token
-> <domain>/api/do-thing
+<domain>/api/key-auth
+<domain>/api/confirm-token
+<domain>/api/do-thing
 or
-> <domain>/api/do-thing&key?=abc
+<domain>/api/do-thing&key?=abc
 
 My understanding is that having queries in the URL is insecure so I think I
 prefer the former. That way I can put more information in something like JSON.
@@ -106,40 +106,40 @@ or updated client-side is based on the client implementation.
 A password isn't just a code. Its an experience.
 
 Its also part of a data structure. That would probably look something like
-> type PasswordData struct {
->     password string 
->     memory uint32
->     time uint32
->     threads uint8
->     keyLen uint32
->     salt []byte // Memory, time, threads, keyLen and salt are all necessary
->                 // for the argon2id functions
-> }
->
-> type LoginInfo struct {
->     id uint // Used to keep track of when one has been added; for more
->             // efficient updating
->     url string
->     username string
->     passwordData PasswordData
->     creation string // RFC3339 format
->     expiry string // RFC3339 format or the string "f" if no expiration
->     tags string // CSV, no whitespace, multiword tags uses hyphens
->     notes string
-> }
+type PasswordData struct {
+    password string 
+    memory uint32
+    time uint32
+    threads uint8
+    keyLen uint32
+    salt []byte // Memory, time, threads, keyLen and salt are all necessary
+                // for the argon2id functions
+}
+
+type LoginInfo struct {
+    id uint // Used to keep track of when one has been added; for more
+            // efficient updating
+    url string
+    username string
+    passwordData PasswordData
+    creation string // RFC3339 format
+    expiry string // RFC3339 format or the string "f" if no expiration
+    tags string // CSV, no whitespace, multiword tags uses hyphens
+    notes string
+}
 
 When data is being prepared to be transfered to the client, the structure will
 probably look something like this:
-> type UnsafeInfo struct {
->     id uint
->     url string
->     username string
->     password string // The only change from LoginInfo
->     creation string
->     expiry string
->     tags string
->     notes string
-> }
+type UnsafeInfo struct {
+    id uint
+    url string
+    username string
+    password string // The only change from LoginInfo
+    creation string
+    expiry string
+    tags string
+    notes string
+}
 
 For transfering between the server and the client, protobuf is probably the best
 option. This way updates can be made lighter on the network and I get some nice
